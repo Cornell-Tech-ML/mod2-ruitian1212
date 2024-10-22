@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import random
-from typing import Iterable, Optional, Sequence, Tuple, Union
+from typing import Iterable, Optional, Sequence, Tuple, Union, List
 
 import numba
 import numba.cuda
@@ -117,7 +117,7 @@ def shape_broadcast(shape1: UserShape, shape2: UserShape) -> UserShape:
         shape2 = [1 for _ in range(len(shape1) - len(shape2))] + list(shape2)
     else:
         shape1 = [1 for _ in range(len(shape2) - len(shape1))] + list(shape1)
-    n_shape: tuple[int] = []
+    n_shape: List[int] = []
     for i in range(len(shape1)):
         if shape1[i] != shape2[i]:
             if shape1[i] == 1:
@@ -128,7 +128,7 @@ def shape_broadcast(shape1: UserShape, shape2: UserShape) -> UserShape:
                 raise IndexingError(f"Cannot broadcast {shape1} and {shape2}.")
         else:
             n_shape.append(shape1[i])
-    return n_shape
+    return tuple(n_shape)
 
 
 def strides_from_shape(shape: UserShape) -> UserStrides:
@@ -198,7 +198,7 @@ class TensorData:
 
     @staticmethod
     def shape_broadcast(shape_a: UserShape, shape_b: UserShape) -> UserShape:
-        """Return broadcasted shape of two shapes"""
+        """Broadcast the shape"""
         return shape_broadcast(shape_a, shape_b)
 
     def index(self, index: Union[int, UserIndex]) -> int:
